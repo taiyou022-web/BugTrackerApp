@@ -16,6 +16,12 @@ interface IssueDao {
     @Query("SELECT * FROM issues ORDER BY createdAt DESC")
     fun getAllIssues(): Flow<List<Issue>>
 
+    @Query("SELECT * FROM issues WHERE syncPending = 1")
+    fun getPendingIssues(): Flow<List<Issue>>
+
+    @Query("UPDATE issues SET syncPending = :syncPending WHERE id = :issueId")
+    suspend fun updateSyncStatus(issueId: Int, syncPending: Boolean)
+
     @Update
     suspend fun updateIssue(issue: Issue)
 

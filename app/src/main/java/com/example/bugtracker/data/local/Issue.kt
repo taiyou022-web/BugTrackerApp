@@ -11,5 +11,6 @@ data class Issue(
     val description: String,
     val priority: String,
     val status: String,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val syncPending: Boolean = true
 )
