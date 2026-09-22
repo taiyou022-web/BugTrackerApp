@@ -14,9 +14,12 @@ object IssueSyncScheduler {
 
     fun schedule(context: Context) {
 
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
+        val constraints =
+            Constraints.Builder()
+                .setRequiredNetworkType(
+                    NetworkType.CONNECTED
+                )
+                .build()
 
         val syncRequest =
             PeriodicWorkRequestBuilder<IssueSyncWorker>(
@@ -26,10 +29,12 @@ object IssueSyncScheduler {
                 .setConstraints(constraints)
                 .build()
 
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            WORK_NAME,
-            ExistingPeriodicWorkPolicy.KEEP,
-            syncRequest
-        )
+        WorkManager
+            .getInstance(context)
+            .enqueueUniquePeriodicWork(
+                WORK_NAME,
+                ExistingPeriodicWorkPolicy.KEEP,
+                syncRequest
+            )
     }
 }

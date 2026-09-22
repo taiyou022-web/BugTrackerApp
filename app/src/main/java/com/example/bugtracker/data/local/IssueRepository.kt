@@ -36,11 +36,28 @@ class IssueRepository(
         issueDao.updateSyncStatus(issueId, syncPending)
     }
 
-    suspend fun syncPendingIssues(api: IssueApiService) {
-        val pendingIssues = issueDao.getPendingIssues().first()
+    /**
+     * Returns true when all pending issues are synchronized.
+     * Returns false when at least one synchronization fails.
+     */
+    suspend fun syncPendingIssues(
+        api: IssueApiService
+    ): Boolean {
+
+        val pendingIssues = issueDao
+            .getPendingIssues()
+            .first()
+
+        if (pendingIssues.isEmpty()) {
+            return true
+        }
+
+        var allSuccessful = true
 
         for (issue in pendingIssues) {
+
             try {
+
                 val dto = IssueDto(
                     id = issue.id,
                     title = issue.title,
@@ -58,8 +75,12 @@ class IssueRepository(
                 )
 
             } catch (e: Exception) {
-                // Keep syncPending = true so it can be retried later.
+
+                // Keep the issue pending so it can be retried.
+                allSuccessful = false
             }
         }
+
+        return allSuccessful
     }
 }

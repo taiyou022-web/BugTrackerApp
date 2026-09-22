@@ -13,15 +13,28 @@ class IssueSyncWorker(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
+
         return try {
-            val database = BugTrackerDatabase.getDatabase(applicationContext)
-            val repository = IssueRepository(database.issueDao())
 
-            repository.syncPendingIssues(RetrofitInstance.api)
+            val database =
+                BugTrackerDatabase.getDatabase(applicationContext)
 
-            Result.success()
+            val repository =
+                IssueRepository(database.issueDao())
+
+            val success =
+                repository.syncPendingIssues(
+                    RetrofitInstance.api
+                )
+
+            if (success) {
+                Result.success()
+            } else {
+                Result.retry()
+            }
 
         } catch (e: Exception) {
+
             Result.retry()
         }
     }
